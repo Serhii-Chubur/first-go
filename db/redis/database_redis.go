@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"strconv"
 
 	"github.com/redis/go-redis/v9"
 )
@@ -12,7 +13,7 @@ import (
 type User struct {
 	ID      int
 	Name    string
-	Balance float32
+	Balance float64
 }
 
 func main() {
@@ -25,9 +26,8 @@ func main() {
 	// 	Protocol: 2,
 	// })
 
-	conn, err := redis.ParseURL("reis://redis:@localhost:6379/0")
+	conn, err := redis.ParseURL("redis://redis:@localhost:6379/0")
 	if err != nil {
-		// panic(err)
 		log.Fatal(err)
 	}
 
@@ -47,19 +47,31 @@ func main() {
 	// fmt.Println("key", val)
 
 	var user User = User{ID: 1, Name: "John Doe", Balance: 1000}
-	data, err := json.Marshal(user)
+
+	// data, err := json.Marshal(user)
 	// fmt.Println(string(data))
 
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	err = client.Set(ctx, "user", data, 0).Err()
+	fields := map[string]interface{}{
+		"ID":      strconv.Itoa(user.ID),
+		"Name":    user.Name,
+		"Balance": fmt.Sprintf("%f", user.Balance), // strconv.FormatFloat(user.Balance),
+	}
+
+	err = client.HMSet(ctx, "h_user", fields).Err()
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	val, err := client.Get(ctx, "user").Result()
+	// err = client.Set(ctx, "user", data, 0).Err()
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+
+	val, err := client.HGet(ctx, "h_user", "Balance").Result()
 	if err != nil {
 		log.Fatal(err)
 	}
