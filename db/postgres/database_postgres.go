@@ -9,8 +9,8 @@ import (
 )
 
 type User struct {
-	ID    int
-	Name  string
+	ID      int
+	Name    string
 	Balance float32
 }
 
@@ -22,7 +22,7 @@ func connect() (*pgx.Conn, error) {
 	return conn, err
 }
 
-func performQuery (conn *pgx.Conn, query string) {
+func performQuery(conn *pgx.Conn, query string) {
 	_, err := conn.Exec(context.Background(), query)
 	if err != nil {
 		log.Fatal(err)
@@ -37,7 +37,7 @@ func createUser(conn *pgx.Conn, name string, balance float32) {
 	fmt.Printf("User %s created with balance %f\n\n", name, balance)
 }
 
-func getUserById (conn *pgx.Conn, id int) User{
+func getUserById(conn *pgx.Conn, id int) User {
 	var user User
 	err := conn.QueryRow(context.Background(), "SELECT * FROM users WHERE id = $1", id).Scan(&user.ID, &user.Name, &user.Balance)
 	if err != nil {
