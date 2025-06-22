@@ -16,6 +16,8 @@ type User struct {
 }
 
 func main() {
+	log.SetFlags(log.Lshortfile)
+
 	// client := redis.NewClient(&redis.Options{
 	// 	Addr:     "localhost:6379",
 	// 	Password: "",
@@ -23,8 +25,9 @@ func main() {
 	// 	Protocol: 2,
 	// })
 
-	conn, err := redis.ParseURL("redis://redis:@localhost:6379/0")
+	conn, err := redis.ParseURL("reis://redis:@localhost:6379/0")
 	if err != nil {
+		// panic(err)
 		log.Fatal(err)
 	}
 
